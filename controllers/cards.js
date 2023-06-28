@@ -49,7 +49,7 @@ const putLikeCard = (req, res) => {
       } else if (error.name === 'Not Found') {
         res.status(ERROR_NOT_FOUND).send({ message: 'Карточка не найдена' });
       } else {
-        res.status(ERROR_DEFAULT).send({ message: 'Неизвестная ошибка (500).', error: error.message });
+        res.status(ERROR_DEFAULT).sendsend({ message: 'Неизвестная ошибка (500).', error: error.message });
       }
     });
 };
@@ -64,7 +64,7 @@ const deleteLikeCard = (req, res) => {
       } else if (error.name === 'Not Found') {
         res.status(ERROR_NOT_FOUND).send({ message: 'Карточка не найдена' });
       } else {
-        res.status(ERROR_DEFAULT).send({ message: 'Произошла неизвестная ошибка', error: error.message });
+        res.status(ERROR_DEFAULT).sendsend({ message: 'Произошла неизвестная ошибка', error: error.message });
       }
     });
 };
