@@ -16,4 +16,4 @@
 `npm run dev` — запускает сервер с hot-reload
 
 ## Ссылка на проект
-будет тут
+https://github.com/wellplayed-pro/express-mesto-gha
