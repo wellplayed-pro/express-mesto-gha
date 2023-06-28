@@ -1,44 +1,84 @@
 const Card = require('../models/card');
+const { ERROR_VALIDATION, ERROR_NOT_FOUND, ERROR_DEFAULT } = require('../errors/typical_errors');
 
 const createCard = (req, res) => {
-
-    const { name, about, avatar } = req.body;
-
-    Card.create({ name, about, avatar })
-    .then((user) => {
-        res.send(user)
-    })
+  const { _id } = req.user;
+  const { name, link } = req.body;
+  Card.create({ name, link, owner: _id })
+    .then((card) => res.send(card))
     .catch((error) => {
-        res.status(400).send(error);
-    })
+      if (error.name = "ValidationError") {
+        res.status(ERROR_VALIDATION).send({ message: `Переданы некорректные данные` });
+        return;
+      } else {
+        res.status(ERROR_DEFAULT).send({ message: `Неизвестная ошибка (500).`, error: error.message });
+      }
+    });
 }
 
 const getCards = (req, res) => {
-
-    User.find({})
-    .then((cards) => {
-        res.send(cards)
+  Card.find({})
+    .then((cards) => res.send(cards))
+    .catch(error => {
+      res.status(ERROR_DEFAULT).send({ message: `Неизвестная ошибка (500).`, error: error.message });
     })
-    .catch((error) => {
-        res.status(400).send(error);
-    })
-}
+};
 
 const deleteCardById = (req, res) => {
-
-    const { id } = req.params
-
-    Card.findById(id)
-    .then((user) => {
-        res.send(user)
-    })
+  Card.findByIdAndRemove(req.params.cardId)
+    .orFail(() => new Error("Not Found"))
+    .then((card) => res.send(card))
     .catch((error) => {
-        res.status(400).send(error);
+      if (error.name === "CastError") {
+        res.status(ERROR_VALIDATION).send({ message: `Переданы некорректные данные` });
+        return;
+      } else if (error.name = "Not Found") {
+        res.status(ERROR_NOT_FOUND).send({ message: `Карточка не найдена` });
+        return;
+      } else {
+        res.status(ERROR_DEFAULT).send({ message: `Неизвестная ошибка (500).`, error: error.message });
+      }
     })
-}
+};
+
+const putLikeCard = (req, res) => {
+  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
+    .orFail(() => new Error("Not Found"))
+    .then((card) => res.send(card))
+    .catch((error) => {
+      if (error.name === "CastError") {
+        res.status(ERROR_VALIDATION).send({ message: `Переданы некорректные данные` });
+        return;
+      } else if (error.name = "Not Found") {
+        res.status(ERROR_NOT_FOUND).send({ message: `Карточка не найдена` });
+        return;
+      } else {
+        res.status(ERROR_DEFAULT).sendsend({ message: `Неизвестная ошибка (500).`, error: error.message });
+      }
+    })
+};
+
+const deleteLikeCard = (req, res) => {
+  Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
+    .orFail(() => new Error("Not Found"))
+    .then((card) => res.send(card))
+    .catch((error) => {
+      if (error.name === "CastError") {
+        res.status(ERROR_VALIDATION).send({ message: `Переданы некорректные данные` });
+        return;
+      } else if (error.name = "Not Found") {
+        res.status(ERROR_NOT_FOUND).send({ message: `Карточка не найдена` });
+        return;
+      } else {
+        res.status(ERROR_DEFAULT).sendsend({ message: `Произошла неизвестная ошибка`, error: error.message });
+      }
+    })
+};
 
 module.exports = {
   getCards,
   createCard,
-  deleteCardById
+  deleteCardById,
+  putLikeCard,
+  deleteLikeCard,
 };
