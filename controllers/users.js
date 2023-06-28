@@ -6,9 +6,7 @@ const createUser = (req, res) => {
     const { name, about, avatar } = req.body;
 
     User.create({ name, about, avatar })
-    .then((user) => {
-        res.send(user)
-    })
+    .then((user) => res.send(user))
     .catch((error) => {
         if (error.name === "ValidationError") {
           res.status(ERROR_VALIDATION).send({ message: `Переданы некорректные данные` });
@@ -35,6 +33,7 @@ const getUser = (req, res) => {
     const { id } = req.params
 
     User.findById(id)
+    .orFail(() => new Error("Not Found"))
     .then((user) => {
         res.send(user)
     })
