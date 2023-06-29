@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const router = require('./routes');
 const { ERROR_NOT_FOUND } = require('./errors/typical_errors');
@@ -15,9 +14,6 @@ app.use((req, res, next) => {
 });
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
-
-app.use(bodyParser.json());
-
 app.use(router);
 app.use('/', (reg, res) => {
   res.status(ERROR_NOT_FOUND).send({ message: 'Страница не найдена' });
