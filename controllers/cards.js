@@ -60,7 +60,7 @@ const deleteLikeCard = (req, res) => {
     .catch((error) => {
       if (error.name === 'CastError') {
         res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные' });
-      } else if (error.name === 'Not Found') {
+      } else if (error.message === 'Not Found') {
         res.status(ERROR_NOT_FOUND).send({ message: 'Карточка не найдена' });
       } else {
         res.status(ERROR_DEFAULT).send({ message: 'Произошла неизвестная ошибка', error: error.message });
