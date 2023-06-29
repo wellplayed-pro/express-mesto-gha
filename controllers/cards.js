@@ -28,10 +28,10 @@ const deleteCardById = (req, res) => {
     .orFail(() => new Error('Not Found'))
     .then((card) => res.send(card))
     .catch((error) => {
-      if (error.message === 'CastError') {
+      if (error.name === 'CastError') {
         res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные' });
         return;
-      } if (error.message === 'Not Found') {
+      } else if (error.message === 'Not Found') {
         res.status(ERROR_NOT_FOUND).send({ message: 'Карточка не найдена' });
       } else {
         res.status(ERROR_DEFAULT).send({ message: 'Неизвестная ошибка (500).', error: error.message });
@@ -44,9 +44,9 @@ const putLikeCard = (req, res) => {
     .orFail(() => new Error('Not Found'))
     .then((card) => res.send(card))
     .catch((error) => {
-      if (error.message === 'CastError') {
+      if (error.name === 'CastError') {
         res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные' });
-      } else if (error.message === 'Not Found') {
+      } else if (error.name === 'Not Found') {
         res.status(ERROR_NOT_FOUND).send({ message: 'Карточка не найдена' });
       } else {
         res.status(ERROR_DEFAULT).send({ message: 'Неизвестная ошибка (500).', error: error.message });
@@ -59,9 +59,9 @@ const deleteLikeCard = (req, res) => {
     .orFail(() => new Error('Not Found'))
     .then((card) => res.send(card))
     .catch((error) => {
-      if (error.message === 'CastError') {
+      if (error.name === 'CastError') {
         res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные' });
-      } else if (error.message === 'Not Found') {
+      } else if (error.name === 'Not Found') {
         res.status(ERROR_NOT_FOUND).send({ message: 'Карточка не найдена' });
       } else {
         res.status(ERROR_DEFAULT).send({ message: 'Произошла неизвестная ошибка', error: error.message });
