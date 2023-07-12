@@ -25,7 +25,7 @@ const getCards = (req, res, next) => {
 
 const deleteCardById = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .orFail(() => new new ErrorNotFound('Карточка не найдена')())
+    .orFail(() => new ErrorNotFound('Карточка не найдена')())
     .then((card) => {
       if (card.owner.toString() === req.user._id) {
         card.deleteOne(card)
@@ -40,12 +40,12 @@ const deleteCardById = (req, res, next) => {
 
 const putLikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
-    .orFail(() => new Error('Not Found'))
+    .orFail(() => new ErrorNotFound('Not Found'))
     .then((card) => {
       if (!card) {
         throw new ErrorNotFound('Карточка не найдена');
       } else {
-        next(res.send(card));
+        res.send(card);
       }
     })
     .catch((error) => {

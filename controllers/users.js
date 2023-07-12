@@ -40,7 +40,7 @@ const getUser = (req, res, next) => {
       if (!user) {
         throw new ErrorNotFound('Пользователь не найден');
       } else {
-        next(res.send(user));
+        res.send(user);
       }
     })
     .catch((error) => {
