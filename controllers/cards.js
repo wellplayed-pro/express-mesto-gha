@@ -1,71 +1,78 @@
 const Card = require('../models/card');
-const { ERROR_VALIDATION, ERROR_NOT_FOUND, ERROR_DEFAULT } = require('../errors/typical_errors');
+const ErrorValidation = require('../errors/errorValidation');
+const ErrorNotFound = require('../errors/errorNotFound');
+const ErrorForbidden = require('../errors/errorForbidden.js');
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { _id } = req.user;
   const { name, link } = req.body;
   Card.create({ name, link, owner: _id })
     .then((card) => res.send(card))
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные' });
+        next(new ErrorValidation(`Переданы некорректные данные`));
       } else {
-        res.status(ERROR_DEFAULT).send({ message: 'Неизвестная ошибка (500).', error: error.message });
+        next(error);
       }
     });
 };
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch((error) => {
-      res.status(ERROR_DEFAULT).send({ message: 'Неизвестная ошибка (500).', error: error.message });
-    });
+    .catch(next);
 };
 
-const deleteCardById = (req, res) => {
+const deleteCardById = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .orFail(() => new Error('Not Found'))
-    .then((card) => res.send(card))
-    .catch((error) => {
-      if (error.name === 'CastError') {
-        res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные' });
-      } else if (error.message === 'Not Found') {
-        res.status(ERROR_NOT_FOUND).send({ message: 'Карточка не найдена' });
+    .orFail(() => new new ErrorNotFound(`Карточка не найдена`))
+    .then((card) => {
+      if (card.owner.toString() === req.user._id) {
+        card.deleteOne(card)
+          .then((cards) => res.send(cards))
+          .catch(next)
       } else {
-        res.status(ERROR_DEFAULT).send({ message: 'Неизвестная ошибка (500).', error: error.message });
+        throw new ErrorForbidden('Удалить можно только свою карточку')
       }
-    });
+    })
+    .catch(next);
 };
 
-const putLikeCard = (req, res) => {
+const putLikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .orFail(() => new Error('Not Found'))
-    .then((card) => res.send(card))
-    .catch((error) => {
-      if (error.name === 'CastError') {
-        res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные' });
-      } else if (error.message === 'Not Found') {
-        res.status(ERROR_NOT_FOUND).send({ message: 'Карточка не найдена' });
+    .then((card) => {
+      if (!card) {
+        throw new ErrorNotFound(`Карточка не найдена`)
       } else {
-        res.status(ERROR_DEFAULT).send({ message: 'Неизвестная ошибка (500).', error: error.message });
+        next(res.send(card));
       }
-    });
+    })
+    .catch((error) => {
+      if (error.name === "CastError") {
+        next(new ErrorValidation(`Переданы некорректные данные`));
+      } else {
+        next(error);
+      }
+    })
 };
 
-const deleteLikeCard = (req, res) => {
+const deleteLikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
-    .orFail(() => new Error('Not Found'))
-    .then((card) => res.send(card))
-    .catch((error) => {
-      if (error.name === 'CastError') {
-        res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные' });
-      } else if (error.message === 'Not Found') {
-        res.status(ERROR_NOT_FOUND).send({ message: 'Карточка не найдена' });
+    .then((card) => {
+      if (!card) {
+        throw new ErrorNotFound(`Карточка не найдена`)
       } else {
-        res.status(ERROR_DEFAULT).send({ message: 'Произошла неизвестная ошибка', error: error.message });
+        next(res.send(card));
       }
-    });
+    })
+    .catch((error) => {
+      if (err.name === "CastError") {
+        next(new ErrorValidation(`Переданы некорректные данные`));
+      } else {
+        next(error);
+      }
+    })
 };
 
 module.exports = {
