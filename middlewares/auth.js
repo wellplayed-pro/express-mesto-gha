@@ -11,7 +11,7 @@ const auth = (req, res, next) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, 'SECRET');
+    payload = jwt.verify(token, 'SuperMegaS3cr3t');
   } catch (err) {
     throw new ErrorAuth('Необходимо авторизоваться');
   }
