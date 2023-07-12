@@ -5,7 +5,6 @@ const User = require('../models/user')
 const ErrorAuth = require('../errors/errorAuth');
 const ErrorConflict = require('../errors/errorConflict');
 const ErrorValidation = require('../errors/errorValidation');
-const ErrorNotFound = require('../errors/errorNotFound');
 const ErrorDefault = require('../errors/errorDefault');
 
 const createUser = (req, res, next) => {

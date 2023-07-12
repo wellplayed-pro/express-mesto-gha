@@ -1,6 +1,5 @@
 const Card = require('../models/card');
 const ErrorValidation = require('../errors/errorValidation');
-const ErrorNotFound = require('../errors/errorNotFound');
 const ErrorForbidden = require('../errors/errorForbidden.js');
 
 const createCard = (req, res, next) => {

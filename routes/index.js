@@ -3,7 +3,6 @@ const userRoutes = require('./users');
 const cardRoutes = require('./cards');
 const { createUser, login } = require('../controllers/users');
 const auth = require('../middlewares/auth');
-const ErrorNotFound = require('../errors/errorNotFound');
 const { validateCreateUser, validateLogin } = require('../utils/regex');
 
 
