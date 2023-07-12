@@ -1,4 +1,4 @@
-const { ERROR_VALIDATION } = require('./typical_errors')
+const { ERROR_VALIDATION } = require('./typical_errors');
 
 class ErrorValidation extends Error {
   constructor(message) {
