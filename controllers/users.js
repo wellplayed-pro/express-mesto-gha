@@ -1,6 +1,5 @@
 const User = require('../models/user');
 const jsonWebToken = require('jsonwebtoken');
-const User = require('../models/user')
 
 const ErrorAuth = require('../errors/errorAuth');
 const ErrorConflict = require('../errors/errorConflict');
